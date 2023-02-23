@@ -4,7 +4,6 @@ import os
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
-
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/4.1/howto/deployment/checklist/
 
@@ -16,9 +15,7 @@ DEBUG = True
 
 ALLOWED_HOSTS = []
 
-
 # Application definition
-
 INSTALLED_APPS = [
     'django.contrib.admin',
     'django.contrib.auth',
@@ -38,10 +35,6 @@ INSTALLED_APPS = [
     'allauth.socialaccount',
     'allauth.socialaccount.providers.google',  # for Google auth
 ]
-
-#  Link: https://console.cloud.google.com/apis/credentials?project=django-allauth-372210&supportedpurview=project
-#  My Google client ID: --- 864312618533-v64a6k0t2slcj2i65r2k2afjjcndsrtd.apps.googleusercontent.com ---
-#  My Google client Secret Key: --- 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 ---
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
@@ -117,7 +110,6 @@ SOCIALACCOUNT_PROVIDERS = {
 
 WSGI_APPLICATION = 'crypto_wallet.wsgi.application'
 
-
 # Database
 # https://docs.djangoproject.com/en/4.1/ref/settings/#databases
 
@@ -127,7 +119,6 @@ DATABASES = {
         'NAME': BASE_DIR / 'db.sqlite3',
     }
 }
-
 
 # Password validation
 # https://docs.djangoproject.com/en/4.1/ref/settings/#auth-password-validators
@@ -147,7 +138,6 @@ AUTH_PASSWORD_VALIDATORS = [
     },
 ]
 
-
 # Internationalization
 # https://docs.djangoproject.com/en/4.1/topics/i18n/
 
@@ -158,7 +148,6 @@ TIME_ZONE = 'UTC'
 USE_I18N = True
 
 USE_TZ = False
-
 
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/4.1/howto/static-files/
@@ -182,12 +171,8 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 # Telegram bot
 TELEGRAM = {
-    'bot_token': '6061643286:AAEEg8uocpIG-hElIhTCHnkXGx3watNuhIw',
+    'bot_token': 'YOUR_TELEGRAM_TOKEN',
     'channel_name': 'NewMetaCryptoBot',
     'link': 't.me/NewMetaCryptoBot'
 }
 # End telegram bot
-
-#  Link: https://developers.facebook.com/apps/711618907053906/dashboard/
-#  My Facebook client ID: --- 711618907053906 ---
-#  My Facebook client Secret Key: --- e0db44fd49889fa39f7d18e0f8fc7d38 ---
