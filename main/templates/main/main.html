@@ -1,0 +1,663 @@
+<!DOCTYPE html>
+{% load i18n %}
+{% load static %}
+{% load account %}
+{% load socialaccount %}
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" type="text/css" href="{% static 'main/css/style.css' %}">
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,400;0,500;0,700;0,800;0,900;1,600&family=Sora:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="icon" type="image/x-icon" href="{% static 'main/img/favicon.ico' %}">
+    <link href='https://css.gg/image.css' rel='stylesheet'>
+    <title>Crypto wallet</title>
+</head>
+<style>
+    .modal{display: none;}
+</style>
+
+<body>
+    <div class="net">
+        <div class="net-item">
+            <div class="net-item__elem"></div>
+        </div>
+        <div class="net-item">
+            <div class="net-item__elem"></div>
+        </div>
+        <div class="net-item">
+            <div class="net-item__elem"></div>
+        </div>
+        <div class="net-item">
+            <div class="net-item__elem"></div>
+        </div>
+        <div class="net-item">
+            <div class="net-item__elem"></div>
+        </div>
+    </div>
+
+
+    <aside class="sidebar js-sidebar">
+        <div class="sidebar-trigger js-sidebar-trigger">
+            <span></span>
+            <span></span>
+            <span></span>
+        </div>
+
+        <div class="sidebar-content">
+
+        <div class="account">
+            <div class="account-content unauthorized">
+
+                {% if not user.is_authenticated %} <!-- Unauthorized customer -->
+
+                <div class="account__logo">
+                    <span class="icon icon-user account-icon"></span>
+                </div>
+
+                <div class="account-info">
+                    <div class="account-actions">
+                        <a data-fancybox href="#modal-login" class="btn btn-primary account-actions__item">
+                            Log In
+                        </a>
+                        <a data-fancybox href="#modal-register" class="btn btn-primary account-actions__item">
+                            Sign Up
+                        </a>
+                    </div>
+                </div>
+
+                {% else %} <!-- Authorized customer -->
+
+                <div class="account__logo">
+                    <span class="icon icon-user account-icon"></span>
+                </div>
+
+                <div class="account-info">
+                    <div class="account-actions">
+                        <form method="post" action="{% url 'account_logout' %}">
+                            {% csrf_token %}
+                            {% if redirect_field_value %}
+                                <input type="hidden" name="{{ redirect_field_name }}" value="{{ redirect_field_value }}"/>
+                            {% endif %}
+                            <h1><button class="btn btn-default account-actions__item" type="submit">{% trans 'Log Out' %}</button></h1>
+                        </form>
+                    </div>
+                </div>
+                {% endif %}
+            </div>
+        </div>
+
+            <div class="sidebar-nav">
+                <ul>
+                    <li class="sidebar-nav-item">
+                        <span class="icon icon-coin-dollar sidebar-nav__icon"></span>
+                        <a class="sidebar-nav__link js-sidebar-link" href="">
+                            My wallet
+                        </a>
+                    </li>
+                    <li class="sidebar-nav-item">
+                        <span class="icon icon-cart sidebar-nav__icon"></span>
+                        <a class="sidebar-nav__link js-sidebar-link" href="">
+                            Overview
+                        </a>
+                    </li>
+                    <li class="sidebar-nav-item">
+                        <span class="icon icon-loop sidebar-nav__icon"></span>
+                        <a class="sidebar-nav__link js-sidebar-link" href="">
+                            Excahnge
+                        </a>
+                    </li>
+                    <li class="sidebar-nav-item">
+                        <span class="icon icon-database sidebar-nav__icon"></span>
+                        <a class="sidebar-nav__link js-sidebar-link" href="">
+                            Backup
+                        </a>
+                    </li>
+                </ul>
+            </div>
+
+            <div class="sidebar-nav sidebar-addition">
+                <ul>
+                    <li class="sidebar-nav-item">
+                        <span class="icon icon-cogs sidebar-nav__icon"></span>
+                        <a class="sidebar-nav__link" href="#">Settings</a>
+                    </li>
+                    <li class="sidebar-nav-item">
+                        <span class="icon icon-info sidebar-nav__icon"></span>
+                        <a class="sidebar-nav__link" href="#">Help</a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </aside>
+
+    <div class="wrapper">
+        <header class="header">
+            <div class="logo">
+                <img src="{% static 'main/img/logo.png' %}" alt="Perfecto" class="logo__img">
+                <div class="logo__title">
+                    crypto
+                    <span>wallet</span>
+                    <a href="/admin/login/?next=/admin/" class="btn btn-default account-actions__item">Admin</a>
+                    <button data-fancybox href="#modal-nft" class="btn btn-default account-actions__item">Create NFT</button>
+                    <a href="https://t.me/NewMetaCryptoBot" target="_blank" class="btn btn-default account-actions__item">Telegram</a>
+                </div>
+            </div>
+
+            <div class="account js-action-content mobile-dropdown">
+
+                <!-- Authorized customer -->
+                {% if user.is_authenticated %}
+                <div class="account-content">
+                    <div class="account__title">
+                        {{ user.username }}
+                    </div>
+                    <div class="account__logo">
+                        {% if request.user.userprofile.id %}
+                            <img src="{{ user.userprofile.avatar.url }}" alt="User name">
+                        {% else %}
+                            <img src="{% static 'main/img/avatar.jpg' %}" alt="User avatar">
+                        {% endif %}
+                    </div>
+                </div>
+
+                <div class="account-actions">
+                    <form method="POST" action="{% url 'account_logout' %}">
+                        {% csrf_token %}
+                        {% if redirect_field_value %}
+                            <input type="hidden" name="{{ redirect_field_name }}" value="{{ redirect_field_value }}"/>
+                        {% endif %}
+                        <button class="btn btn-default account-actions__item" type="submit">{% trans 'Log Out' %}</button>
+                    </form>
+                </div>
+                <div class="account account-mobile">
+                    <div class="account-content">
+                        <div class="account__title">
+                            {{ user.username }}
+                        </div>
+
+                    </div>
+                </div>
+
+                {% else %} <!-- Unauthorized customer -->
+
+                 <div class="account-content">
+                    <div class="account__logo">
+                        <span class="icon icon-user account-icon"></span>
+                    </div>
+                </div>
+
+                <div class="account-actions">
+                    <a data-fancybox class="btn btn-default account-actions__item" href="#modal-login">
+                        Log In
+                    </a>
+                    <a data-fancybox class="btn btn-default account-actions__item" href="#modal-register">
+                        Sign Up
+                    </a>
+                </div>
+                {% endif %}
+            </div>
+
+            <button class="btn-details account-details js-account">
+                <span></span>
+                <span></span>
+                <span></span>
+            </button>
+        </header>
+
+        <div class="main-wrapper">
+            <main class="main js-main">
+
+                <div class="container">
+
+                    <div class="row">
+                        <div class="column">
+                            <div class="block-wrapper">
+                                <div class="block">
+                                    <div class="block-head">
+                                        <div class="block-title">
+                                            <div class="name">
+                                                Total
+                                            </div>
+                                        </div>
+                                        <button class="btn-details js-block-trigger active">
+                                            <span></span>
+                                            <span></span>
+                                            <span></span>
+                                        </button>
+                                    </div>
+                                    <div class="block-content">
+                                        <div class="chart-wrapper">
+                                            <div class="chart-price">
+                                                <div class="chart-price__currency">$</div>
+                                                <div class="chart-price__value">
+                                                    {{ wallets.balances | floatformat:2 }}
+                                                </div>
+                                            </div>
+                                            <canvas id="myChart">
+                                            </canvas>
+                                        </div>
+                                    </div>
+                                    <div class="wallet-actions">
+                                        {% if user.is_authenticated %}
+                                            <button data-fancybox href="#modal-send" class="wallet-actions-item btn btn-primary">
+                                                <div class="title">Send</div>
+                                                <div class="currency"></div>
+                                            </button>
+                                            <button data-fancybox href="#modal-create" class="wallet-actions-item btn btn-primary">
+                                                <div class="title">Create Wallet</div>
+                                                <div class="currency js-currency"></div>
+                                            </button>
+                                        {% else %}
+                                            <button data-fancybox href="#modal-login" class="wallet-actions-item btn btn-primary">
+                                                <div class="title">Send</div>
+                                                <div class="currency"></div>
+                                            </button>
+                                            <button data-fancybox href="#modal-login" class="wallet-actions-item btn btn-primary">
+                                                <div class="title">Create Wallet</div>
+                                                <div class="currency js-currency"></div>
+                                            </button>
+                                        {% endif %}
+
+
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="block-wrapper">
+                                <div class="block">
+                                    <div class="block-head">
+                                        <div class="block-title">
+                                            <div class="name">
+                                                My wallets
+                                            </div>
+                                        </div>
+                                        <button class="btn-details js-block-trigger active">
+                                            <span></span>
+                                            <span></span>
+                                            <span></span>
+                                        </button>
+                                    </div>
+                                    <div class="block-content" >
+                                        <div class="list-wrapper">
+                                            <div class="list">
+                                                {% for wallet in wallets %}
+                                                <div class="list-item tab-title js-tab-title active" data-id="{{wallet.id}}">
+                                                    <div class="list-item-head">
+                                                        <div class="list-item__img">
+                                                            {% if wallet.cryptocurrency == tokens.0 %}
+                                                                <img src="{% static 'main/img/ETH.png' %}" alt="Currency">
+                                                            {% else %}
+                                                                <img src="{% static 'main/img/BTC.jpg' %}" alt="Currency">
+                                                            {% endif %}
+                                                        </div>
+                                                        <div class="list-item__title">
+                                                            <p class="title-wallet">{{ wallet.name }}</p>
+                                                            <p>{{ wallet.public_key }}</p>
+                                                        </div>
+                                                    </div>
+                                                    {% if wallet.cryptocurrency == tokens.0 %}
+                                                    <div class="list-item-body">
+                                                        <div class="list-item__part">
+                                                            <div class="value">{{wallet.dollar_balance_eth | floatformat:2}}</div>
+                                                            <div class="currency">$</div>
+                                                        </div>
+                                                        <div class="list-item__part">
+                                                            <div class="value">
+                                                                {{ wallet.balance_eth | floatformat:8 }}
+                                                            </div>
+                                                            <div class="currency">
+                                                                ETH
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                    {% else %}
+                                                    <div class="list-item-body">
+                                                        <div class="list-item__part">
+                                                            <div class="value">{{wallet.dollar_balance_btc | floatformat:2}}</div>
+                                                            <div class="currency">$</div>
+                                                        </div>
+                                                        <div class="list-item__part">
+                                                            <div class="value">
+                                                                {{ wallet.balance_btc | floatformat:8 }}
+                                                            </div>
+                                                            <div class="currency" id="get_currency">BTC</div>
+                                                        </div>
+                                                    </div>
+                                                    {% endif %}
+                                                </div>
+                                                {% endfor %}
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="column">
+                        {% if user.is_authenticated %}
+                            <div class="block-wrapper">
+                                <div class="block">
+                                    <div class="block-head">
+                                        <div class="block-title">
+                                            <div class="name">
+                                                Transaction history
+                                            </div>
+                                        </div>
+                                        <button class="btn-details js-block-trigger active">
+                                            <span></span>
+                                            <span></span>
+                                            <span></span>
+                                        </button>
+                                    </div>
+
+                                    <div class="block-content">
+                                        <div class="table-wrapper">
+                                            <div class="table history-scroll" id="table"></div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="block-wrapper" id="remove-div" onchange="getDivValue();">
+                                <div class="block">
+                                    <div class="block-head">
+                                        <div class="block-title">
+                                            <div class="name">
+                                                NFT tokens
+                                            </div>
+                                        </div>
+                                        <button class="btn-details js-block-trigger active">
+                                            <span></span>
+                                            <span></span>
+                                            <span></span>
+                                        </button>
+                                    </div>
+
+                                    <div class="block-content" style="display:none;">
+                                        <div class="table-wrapper">
+                                            <div class="table nft-tokens-scroll" id="nft_table"></div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        {% endif %}
+                        </div>
+                    </div>
+                </div>
+            </main>
+        </div>
+
+        <footer class="footer">
+            <div class="container">
+                <div class="footer-content">
+                    <ul>
+                        <li>
+                            <a href="#">About us</a>
+                        </li>
+                        <li>
+                            <a href="#">Contact us</a>
+                        </li>
+                        <li>
+                            <a href="#">Terms & Conditions</a>
+                        </li>
+                    </ul>
+                </div>
+                </div>
+
+        </footer>
+    </div>
+
+    <div id="modal-login" class="modal">
+        <div class="modal-content">
+            <div class="form-wrapper">
+                <form action="{% url 'account_login' %}" method="POST" class="form">
+                    {% csrf_token %}
+                    <div class="form__title">
+                        Login
+                    </div>
+
+                    <ul class="social">
+                        <li class="social-item">
+                            <a href="{% provider_login_url 'google'  %}" class="social-item__link">Google</a>
+                        </li>
+                        <li class="social-item">
+                            <a href="#" class="social-item__link">Facebook</a>
+                        </li>
+                        <li class="social-item">
+                            <a href="#" class="social-item__link">LinkedIn</a>
+                        </li>
+                        <li class="social-item">
+                            <a href="#" class="social-item__link">Gmail</a>
+                        </li>
+
+                    </ul>
+
+                    <div class="form-choice"><span></span></div>
+
+                    <div class="form-content">
+                        <div class="input-wrapper">
+                            {{ login_form.login }}
+                        </div>
+                        <div class="input-wrapper">
+                            {{ login_form.password }}
+                        </div>
+                        <div class="input-wrapper input-wrapper-submit">
+                            <input class="btn btn-primary" type="submit" value="Login">
+                        </div>
+                    </div>
+                    <a class="form__link" href="{% url 'account_reset_password' %}">Forgot your account password?</a>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <div id="modal-register" class="modal">
+        <div class="modal-content">
+            <div class="form-wrapper">
+                <form action="{% url 'account_signup' %}" class="form" method="POST">
+                    {% csrf_token %}
+                    <div class="form__title">
+                        Sign Up
+                    </div>
+
+                    <div class="form-content">
+                        <div class="input-wrapper">
+                            {{ signup_form.username }}
+                        </div>
+                        <div class="input-wrapper">
+                            {{ signup_form.email }}
+                        </div>
+                        <div class="input-wrapper">
+                            {{ signup_form.password1 }}
+                        </div>
+                        <div class="input-wrapper">
+                            {{ signup_form.password2 }}
+                        </div>
+                        <div class="input-wrapper input-wrapper-submit">
+                            <input class="btn btn-primary" type="submit" value="Submit">
+                        </div>
+                    </div>
+                    <a data-fancybox class="form__link" href="#modal-login">You already have account?</a>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <div id="modal-recover-password" class="modal">
+        <div class="modal-content">
+            <div class="form-wrapper">
+                <form action="" class="form">
+                    <div class="input-wrapper">
+                        <input type="email" class="input" id="recover-pass-email" placeholder="Enter your email" required>
+                    </div>
+                    <div class="input-wrapper input-wrapper-submit">
+                        <input class="btn btn-primary" type="submit" value="Submit">
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <div id="modal-send" class="modal">
+        <div class="modal-content">
+            <div class="form-wrapper">
+                <form method="POST" class="form">
+                    {% csrf_token %}
+                    <div class="form__title">
+                        Make transaction
+                    </div>
+
+                    <div class="form-content">
+                        <div class="input-wrapper">
+                            <h2>From</h2>
+                            <select name="from_wallet" class="input">
+                                {% for wallet in wallets %}
+                                <option value="{{ wallet.public_key }}">{{ wallet.name }}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                        <div class="input-wrapper">
+                            <h2>To:</h2>
+                            {{ transaction_form.to_wallet }}
+                            <h2></h2>
+                        </div><br>
+
+                        <div class="input-wrapper">
+                            <h2>Amount:</h2>
+                            {{ transaction_form.amount }}
+                        </div><br><br><br>
+
+                    </div>
+                     <div class="input-wrapper input-wrapper-submit">
+                            <input class="btn btn-primary" type="submit" value="Confirm">
+                        </div>
+                </form>
+
+            </div>
+        </div>
+    </div>
+
+    <div id="modal-create" class="modal">
+        <div class="modal-content">
+            <div class="form-wrapper">
+                <form method="POST" class="form">
+                    {% csrf_token %}
+                    <div class="form__title">
+                        Create your wallet
+                    </div>
+
+                    <div class="form-content">
+                        <div class="input-wrapper">
+                            <select name="cryptocurrency" class="input" onchange="getSelectValue();">
+                                {% for token in tokens %}
+                                <option value="{{ token.abbreviation }}">{{ token.name }}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                        <div class="input-wrapper">
+                            {{ creation_form.name }}
+                        </div>
+                        <div class="input-wrapper" id="div-btc">
+                            {{ creation_form.public_key }}
+                        </div>
+                        <div class=input-wrapper">
+                            <h2>Your wallet name:</h2>
+                            <p id="text_1" class="input"></p>
+                            <br>
+                            <h2>Your wallet address:</h2>
+                            <p id="text_2" class="input"></p>
+                        </div>
+                    </div>
+                </form>
+                <center><button id="ajax-post" class="btn btn-default account-actions__item" type="submit"><h2>Create</h2></button></center>
+            </div>
+        </div>
+    </div>
+
+    <div id="modal-nft" class="modal">
+        <div class="modal-content">
+            <div class="form-wrapper">
+                <form method="POST" class="form" action="" enctype="multipart/form-data">
+                    {% csrf_token %}
+                    <div class="form__title">
+                        🔨 Mint a new NFT
+                    </div>
+                    <div><center><img class="nft-image" id="output_image"></center>
+                        <br></div>
+
+                    <div class="form-content">
+                        <div class="input-wrapper">
+                            {{ nft_form.nft_name }}
+                        </div>
+                        <div class="input-wrapper">
+                            {{ nft_form.description }}
+                        </div>
+                        <div class="input-wrapper">
+                            {{ nft_form.image }}
+                        </div>
+                        <div class="input-wrapper">
+                            <select class="input" name="nft_wallet">
+                                {% for wallet in wallets %}
+                                    {% if wallet.cryptocurrency == tokens.0 %}
+                                        <option value="{{ wallet.public_key }}">{{ wallet.name }}</option>
+                                    {% endif %}
+                                {% endfor %}
+                            </select>
+                        </div>
+                    </div>
+                    <div class="input-wrapper input-wrapper-submit">
+                        <input class="btn btn-primary" type="submit" value="Create">
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <div id="modal-details" class="modal">
+        <div class="modal-content">
+            <div class="form-wrapper">
+                <form method="POST" class="form" action="" enctype="multipart/form-data">
+                    <div class=input-wrapper">
+                        <h2>From:</h2>
+                        {% for sender in transactions.senders %}
+                            <p class="input">{{ sender }}</p>
+                        {% endfor %}
+                        <br><br>
+                        <h2>To:</h2>
+                        {% for receiver in transactions.receivers %}
+                            <p class="input">{{ receiver }}</p>
+                        {% endfor %}
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <script src="{% static 'main/js/wallet.js' %}"></script>
+    <script src="{% static 'main/js/ajax.js' %}"></script>
+    <script type="text/javascript">
+        var df_wallet_names = {{ wallets.name|safe }};
+        var df_wallet_balances = {{ wallets.dollar_balances|safe }};
+        var t = document.getElementById("myChart");
+        new Chart(t, {
+            type: "doughnut",
+            data: {
+                labels: df_wallet_names,
+                datasets: [
+                    {
+                        label: "Currencies",
+                        data: df_wallet_balances,
+                        backgroundColor: ["rgba(255, 99, 132, 1)", "rgba(54, 162, 235, 1)", "rgba(255, 206, 86, 1)", "rgba(75, 192, 192, 1)"],
+                        borderColor: ["rgba(255, 99, 132, 1)", "rgba(54, 162, 235, 1)", "rgba(255, 206, 86, 1)", "rgba(75, 192, 192, 1)"],
+                        borderWidth: 1,
+                    },
+                ],
+            },
+            options: { plugins: { legend: { display: !1, labels: { position: "bottom", color: "rgb(255, 99, 132)" } } } },
+        });
+
+    </script>
+</body>
+</html>
